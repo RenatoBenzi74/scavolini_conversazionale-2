@@ -2,10 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import type { Messaggio } from "@/lib/types";
+import type { Scenario } from "@/lib/scenari";
 
 interface ChatAreaProps {
   messaggi: Messaggio[];
   loading: boolean;
+  scenario?: Scenario;
 }
 
 function MessaggioVenditore({ testo }: { testo: string }) {
@@ -24,9 +26,11 @@ function MessaggioVenditore({ testo }: { testo: string }) {
 function MessaggioCliente({
   testo,
   apertura,
+  nomeCliente = "Cliente",
 }: {
   testo: string;
   apertura?: number;
+  nomeCliente?: string;
 }) {
   let borderColore = "border-slate-200";
   if (apertura !== undefined) {
@@ -44,13 +48,13 @@ function MessaggioCliente({
         >
           <p className="text-sm leading-relaxed text-slate-800">{testo}</p>
         </div>
-        <p className="text-xs text-slate-400 mt-1 ml-1">Luca</p>
+        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente}</p>
       </div>
     </div>
   );
 }
 
-function IndicatoreTyping() {
+function IndicatoreTyping({ nomeCliente = "Cliente" }: { nomeCliente?: string }) {
   return (
     <div className="flex justify-start">
       <div className="max-w-[75%]">
@@ -61,14 +65,18 @@ function IndicatoreTyping() {
             <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
           </div>
         </div>
-        <p className="text-xs text-slate-400 mt-1 ml-1">Luca sta scrivendo…</p>
+        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente} sta scrivendo…</p>
       </div>
     </div>
   );
 }
 
-export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
+export default function ChatArea({ messaggi, loading, scenario }: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  const nomeCliente = scenario?.nomeCliente ?? "Cliente";
+  const messaggioIniziale =
+    scenario?.messaggioIniziale ??
+    "È bella, non lo nego... ma il prezzo è più alto di quanto pensavo.";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -78,20 +86,19 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="text-4xl">🏠</div>
+          <div className="text-4xl">{scenario?.emoji ?? "🏠"}</div>
           <p className="font-semibold text-slate-700">
-            Luca sta aspettando
+            {nomeCliente} sta aspettando
           </p>
           <p className="text-sm text-slate-500 leading-relaxed">
-            È venuto per informarsi su una cucina. Ha già sentito altri.
             Inizia la conversazione — le tue parole hanno conseguenze reali.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
             <p className="text-xs font-semibold text-amber-700 mb-1">
-              Situazione iniziale
+              Prima frase del cliente
             </p>
             <p className="text-sm text-amber-800 italic">
-              &quot;Mi sembra un po&apos; caro sinceramente…&quot;
+              &quot;{messaggioIniziale}&quot;
             </p>
           </div>
         </div>
@@ -101,13 +108,8 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
 
   return (
     <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-      {/* Messaggio iniziale di Luca (fisso) */}
-      {messaggi.length >= 0 && (
-        <MessaggioCliente
-          testo="Mi sembra un po' caro sinceramente…"
-          apertura={5}
-        />
-      )}
+      {/* Messaggio iniziale del cliente (fisso, dallo scenario) */}
+      <MessaggioCliente testo={messaggioIniziale} apertura={5} nomeCliente={nomeCliente} />
 
       {messaggi.map((msg, i) => {
         if (msg.ruolo === "venditore") {
@@ -118,13 +120,15 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
               key={i}
               testo={msg.testo}
               apertura={msg.stato?.apertura}
+              nomeCliente={nomeCliente}
             />
           );
         }
       })}
 
-      {loading && <IndicatoreTyping />}
+      {loading && <IndicatoreTyping nomeCliente={nomeCliente} />}
       <div ref={bottomRef} />
     </div>
   );
 }
+
