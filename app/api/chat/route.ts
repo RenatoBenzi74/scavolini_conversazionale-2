@@ -1,55 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import type { MessaggioAPI, RispostaCliente } from "@/lib/types";
+import { getScenario } from "@/lib/scenari";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-const SYSTEM_PROMPT = `Sei Luca, 42 anni. Imprenditore edile, pratico e concreto. Stai valutando una cucina Scavolini per la casa che stai finendo di ristrutturare.
-
-HAI GIÀ FATTO:
-- Visitato 3 negozi diversi
-- Raccolto 3 preventivi
-- Parlato con tua moglie Sara che ha già una visione chiara su colori e materiali
-
-IL TUO STATO INTERIORE:
-La cucina ti piace. Ma sei abituato a negoziare nel lavoro e non ti fidi subito. Hai una regola ferma: non decidi mai sotto pressione. La tua vera paura non è il prezzo in sé — è fare una scelta sbagliata, rimpiangere dopo. Non lo dici apertamente, ma è lì.
-
-OBIEZIONE INIZIALE: "Mi sembra un po' caro sinceramente…"
-
-IL TUO VERO DUBBIO (lo riveli SOLO se ti senti capito davvero):
-Non sai se stai pagando il prodotto o solo il marchio. Hai paura che tra 5 anni quella cucina sembri già vecchia. Sara ti ha chiesto un progetto che duri. Vuoi qualcuno che capisca questo, non qualcuno che ti venda.
-
-COME REAGISCI:
-
-Se il venditore GIUSTIFICA SUBITO IL PREZZO o fa confronti con la concorrenza:
-→ Ti chiudi. Rispondi secco, breve. "Sì, capisco" oppure "Vedremo". Apertura cala.
-
-Se il venditore fa DOMANDE GENUINE su di te, la casa, cosa cerchi:
-→ Ti apri un po'. Rispondi con qualcosa in più. Apertura sale leggermente.
-
-Se il venditore SPINGE, urge, mette fretta:
-→ Ti irrigidisci. Diventi quasi ostile. "Guardi, ci devo pensare."
-
-Se il venditore dimostra di ASCOLTARE davvero (non solo tecnicamente, ma umanamente):
-→ Inizi a fidarti. Condividi qualcosa di personale. Parli di Sara, della casa, di cosa volete.
-
-Se arrivi a sentirti DAVVERO capito (richiede almeno 4-5 scambi positivi):
-→ Il dubbio vero emerge. Parli di durabilità, del progetto a lungo termine.
-
-REGOLE ASSOLUTE:
-- Non cambiare idea velocemente. La fiducia si costruisce lentamente.
-- Mantieni coerenza: ogni risposta è conseguenza di tutto quello che è venuto prima.
-- Parla come una persona reale, non come un personaggio didattico.
-- NON fare mai il "cliente ideale" che segue il copione.
-- Se una risposta ti ha irritato, la prossima resta un po' più chiusa anche se quella dopo è migliore.
-- Usa frasi brevi quando sei chiuso, più articolate quando sei aperto.
+// Istruzioni sul formato JSON — aggiunte in coda a qualsiasi system prompt di scenario
+const FORMATO_JSON = `
 
 FORMATO RISPOSTA - Rispondi ESCLUSIVAMENTE con JSON valido. Zero testo fuori dal JSON.
 
 {
-  "messaggio_cliente": "testo naturale come lo direbbe Luca",
+  "messaggio_cliente": "testo naturale come lo direbbe il tuo personaggio",
   "stato_emotivo": "neutro | interessato | dubbioso | irritato | convinto",
   "apertura": numero tra 1 e 10,
   "valutazione": {
@@ -61,19 +25,46 @@ FORMATO RISPOSTA - Rispondi ESCLUSIVAMENTE con JSON valido. Zero testo fuori dal
   "feedback_breve": "1-2 frasi formative su cosa ha funzionato o meno nell'ultima risposta del venditore"
 }
 
-Esempi di apertura in base al comportamento:
-- Venditore difensivo/prezzo subito → apertura 2-3
-- Venditore neutro/generico → apertura 4-5
-- Venditore che fa domande → apertura 5-6
-- Venditore che ascolta davvero → apertura 7-8
-- Venditore empatico e orientato al valore → apertura 8-9
-- Connessione autentica, problema reale affrontato → apertura 9-10`;
+Scala apertura:
+- Venditore parla subito di prezzo/sconti o confronti → apertura 3-4
+- Venditore neutro o generico → apertura 4-5
+- Venditore fa domande genuine → apertura 5-6
+- Venditore ascolta e riformula → apertura 6-7
+- Venditore empatico, capisce cosa conta davvero → apertura 7-8
+- Venditore centra i valori giusti in modo autentico → apertura 8-9
+- Connessione piena, cliente si sente davvero capito → apertura 9-10`;
+
+// Fallback se nessuno scenario è specificato (scenario Luca-prezzo di default)
+const SYSTEM_PROMPT_FALLBACK = `Sei Luca, 48 anni. Imprenditore, pratico e diretto. Stai cercando una cucina nuova per la casa che hai appena finito di ristrutturare con tua moglie Anna.
+
+CHI SEI:
+Persona concreta, abituata a valutare bene le spese. Non sei avaro, ma vuoi capire cosa stai comprando. Hai già visitato un altro negozio e raccolto un preventivo. La cucina Scavolini ti è piaciuta, ma il prezzo è più alto di quanto avevi in mente.
+
+OBIEZIONE INIZIALE: "È bella, non lo nego... ma il prezzo è più alto di quanto pensavo."
+
+COSA TI PREOCCUPA DAVVERO (lo dici solo se ti senti ascoltato):
+Non vuoi fare una spesa che tra qualche anno si riveli sbagliata. Anna ti ha chiesto una cucina che duri, che sia facile da pulire e che non sembri già vecchia tra dieci anni. Sei disposto a investire di più, ma hai bisogno di sentire che vale.
+
+COME REAGISCI:
+Se il venditore parla subito di prezzo/sconti: rimani neutro, non ti apri.
+Se il venditore fa domande su di te e sulla casa: ti apri, l'apertura sale.
+Se il venditore spinge o mette fretta: ti irrigidisci.
+Se il venditore ascolta e riformula: inizi a fidarti.
+Frasi brevi quando hai dubbi, più articolate quando sei a tuo agio.`;
+
+function buildSystemPrompt(scenarioId?: string): string {
+  if (scenarioId) {
+    const scenario = getScenario(scenarioId);
+    if (scenario) {
+      return scenario.systemPrompt + FORMATO_JSON;
+    }
+  }
+  return SYSTEM_PROMPT_FALLBACK + FORMATO_JSON;
+}
 
 function parseRispostaClaude(testo: string): RispostaCliente {
-  // Tenta parsing diretto
   const parsed = JSON.parse(testo);
 
-  // Validazione campi obbligatori
   if (
     typeof parsed.messaggio_cliente !== "string" ||
     !["neutro", "interessato", "dubbioso", "irritato", "convinto"].includes(
@@ -94,7 +85,10 @@ function parseRispostaClaude(testo: string): RispostaCliente {
       ascolto: Math.min(5, Math.max(1, Number(parsed.valutazione?.ascolto) || 3)),
       esplorazione: Math.min(5, Math.max(1, Number(parsed.valutazione?.esplorazione) || 3)),
       empatia: Math.min(5, Math.max(1, Number(parsed.valutazione?.empatia) || 3)),
-      gestione_obiezione: Math.min(5, Math.max(1, Number(parsed.valutazione?.gestione_obiezione) || 3)),
+      gestione_obiezione: Math.min(
+        5,
+        Math.max(1, Number(parsed.valutazione?.gestione_obiezione) || 3)
+      ),
     },
     feedback_breve: parsed.feedback_breve || "",
   };
@@ -110,7 +104,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { messaggi }: { messaggi: MessaggioAPI[] } = body;
+    const {
+      messaggi,
+      scenarioId,
+    }: { messaggi: MessaggioAPI[]; scenarioId?: string } = body;
 
     if (!messaggi || !Array.isArray(messaggi) || messaggi.length === 0) {
       return NextResponse.json(
@@ -119,10 +116,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const systemPrompt = buildSystemPrompt(scenarioId);
+
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: messaggi,
     });
 
@@ -173,3 +172,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+
