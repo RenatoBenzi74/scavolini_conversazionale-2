@@ -1,10 +1,12 @@
 "use client";
 
 import type { RispostaCliente, StatoEmotivo } from "@/lib/types";
+import type { Scenario } from "@/lib/scenari";
 
 interface ClientePanelProps {
   stato: RispostaCliente | null;
   loading: boolean;
+  scenario?: Scenario;
 }
 
 const STATO_CONFIG: Record<
@@ -85,10 +87,15 @@ function AperturaBar({ valore }: { valore: number }) {
   );
 }
 
-export default function ClientePanel({ stato, loading }: ClientePanelProps) {
+export default function ClientePanel({ stato, loading, scenario }: ClientePanelProps) {
   const statoEmotivo = stato?.stato_emotivo ?? "neutro";
   const apertura = stato?.apertura ?? 5;
   const cfg = STATO_CONFIG[statoEmotivo];
+
+  const nomeCliente = scenario?.nomeCliente ?? "Luca";
+  const etaCliente = scenario?.eta ?? 48;
+  const profiloCliente = scenario?.profilo ?? "Cliente Scavolini";
+  const emojiCliente = scenario?.emoji ?? "👤";
 
   return (
     <div className="flex flex-col gap-4">
@@ -99,13 +106,15 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
         >
           {loading ? (
             <span className="animate-pulse">⏳</span>
-          ) : (
+          ) : stato ? (
             <span>{cfg.emoji}</span>
+          ) : (
+            <span>{emojiCliente}</span>
           )}
         </div>
         <div>
-          <p className="font-bold text-slate-800 text-lg">Luca</p>
-          <p className="text-sm text-slate-500">42 anni · Cliente Scavolini</p>
+          <p className="font-bold text-slate-800 text-lg">{nomeCliente}</p>
+          <p className="text-sm text-slate-500">{etaCliente} anni · {profiloCliente}</p>
           <p className={`text-sm font-semibold ${cfg.colore}`}>{cfg.label}</p>
         </div>
       </div>
@@ -133,3 +142,4 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
     </div>
   );
 }
+
