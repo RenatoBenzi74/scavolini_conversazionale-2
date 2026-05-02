@@ -266,6 +266,7 @@ export default function HomePage() {
               onInvia={inviaMessaggio}
               loading={sim.loading}
               disabled={false}
+              nomeCliente={scenarioSelezionato.nomeCliente}
             />
           </div>
         </main>
@@ -281,7 +282,7 @@ export default function HomePage() {
                 Aggiornato ad ogni risposta di {scenarioSelezionato.nomeCliente}
               </p>
             </div>
-            <FeedbackPanel stato={sim.statoCorrente} loading={sim.loading} />
+            <FeedbackPanel stato={sim.statoCorrente} loading={sim.loading} nomeCliente={scenarioSelezionato.nomeCliente} />
 
             {sim.messaggi.filter((m) => m.ruolo === "cliente").length > 1 && (
               <div className="mt-4 pt-4 border-t border-slate-100">
