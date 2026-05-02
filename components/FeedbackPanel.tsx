@@ -5,6 +5,7 @@ import type { RispostaCliente } from "@/lib/types";
 interface FeedbackPanelProps {
   stato: RispostaCliente | null;
   loading: boolean;
+  nomeCliente?: string;
 }
 
 interface MetricaProps {
@@ -44,12 +45,12 @@ function Metrica({ label, valore, max = 5, icon }: MetricaProps) {
   );
 }
 
-export default function FeedbackPanel({ stato, loading }: FeedbackPanelProps) {
+export default function FeedbackPanel({ stato, loading, nomeCliente = "Cliente" }: FeedbackPanelProps) {
   if (loading) {
     return (
       <div className="flex items-center gap-2 text-slate-400 text-sm">
         <span className="animate-spin">⟳</span>
-        <span>Luca sta pensando…</span>
+        <span>{nomeCliente} sta pensando…</span>
       </div>
     );
   }
@@ -103,3 +104,4 @@ export default function FeedbackPanel({ stato, loading }: FeedbackPanelProps) {
     </div>
   );
 }
+
