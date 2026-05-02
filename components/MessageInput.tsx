@@ -6,19 +6,22 @@ interface MessageInputProps {
   onInvia: (testo: string) => void;
   loading: boolean;
   disabled: boolean;
+  nomeCliente?: string;
 }
 
 const SUGGERIMENTI = [
-  "Capisco la preoccupazione sul prezzo — cosa è più importante per lei?",
-  "Cosa sta cercando esattamente in questa cucina?",
-  "Certo, i nostri prezzi sono giustificati dalla qualità superiore.",
-  "Ha visto anche altri preventivi?",
+  "Capisco. Cosa è più importante per lei in questa cucina?",
+  "Mi racconta un po' la casa? Come ha in mente gli spazi?",
+  "Ha ragione, è un investimento importante — per questo voglio capire bene cosa cerca.",
+  "La garanzia Scavolini è di 10 anni su tutta la struttura — vuole che le spieghi cosa copre?",
+  "Scavolini ha qualità superiore, il prezzo è assolutamente giustificato.",
 ];
 
 export default function MessageInput({
   onInvia,
   loading,
   disabled,
+  nomeCliente = "Cliente",
 }: MessageInputProps) {
   const [testo, setTesto] = useState("");
   const [mostraSuggerimenti, setMostraSuggerimenti] = useState(false);
@@ -84,7 +87,7 @@ export default function MessageInput({
           placeholder={
             disabled
               ? "Premi 'Nuova simulazione' per ricominciare"
-              : "Rispondi a Luca… (Invio per inviare, Shift+Invio per andare a capo)"
+              : `Rispondi a ${nomeCliente}… (Invio per inviare, Shift+Invio per andare a capo)`
           }
           disabled={loading || disabled}
           rows={2}
@@ -112,3 +115,4 @@ export default function MessageInput({
     </div>
   );
 }
+
