@@ -2,12 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import type { Messaggio } from "@/lib/types";
-import type { Scenario } from "@/lib/scenari";
 
 interface ChatAreaProps {
   messaggi: Messaggio[];
   loading: boolean;
-  scenario?: Scenario;
+  nomeCliente?: string;
+  messaggioIniziale?: string;
+  emojiCliente?: string;
 }
 
 function MessaggioVenditore({ testo }: { testo: string }) {
@@ -65,18 +66,20 @@ function IndicatoreTyping({ nomeCliente = "Cliente" }: { nomeCliente?: string })
             <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
           </div>
         </div>
-        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente} sta scrivendo…</p>
+        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente} sta scrivendoâ¦</p>
       </div>
     </div>
   );
 }
 
-export default function ChatArea({ messaggi, loading, scenario }: ChatAreaProps) {
+export default function ChatArea({
+  messaggi,
+  loading,
+  nomeCliente = "Cliente",
+  messaggioIniziale = "Buongiorno.",
+  emojiCliente = "ð¤",
+}: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
-  const nomeCliente = scenario?.nomeCliente ?? "Cliente";
-  const messaggioIniziale =
-    scenario?.messaggioIniziale ??
-    "È bella, non lo nego... ma il prezzo è più alto di quanto pensavo.";
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,12 +89,12 @@ export default function ChatArea({ messaggi, loading, scenario }: ChatAreaProps)
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-3 max-w-sm">
-          <div className="text-4xl">{scenario?.emoji ?? "🏠"}</div>
+          <div className="text-4xl">{emojiCliente}</div>
           <p className="font-semibold text-slate-700">
             {nomeCliente} sta aspettando
           </p>
           <p className="text-sm text-slate-500 leading-relaxed">
-            Inizia la conversazione — le tue parole hanno conseguenze reali.
+            Inizia la conversazione â le tue parole hanno conseguenze reali.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
             <p className="text-xs font-semibold text-amber-700 mb-1">
@@ -108,8 +111,12 @@ export default function ChatArea({ messaggi, loading, scenario }: ChatAreaProps)
 
   return (
     <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-      {/* Messaggio iniziale del cliente (fisso, dallo scenario) */}
-      <MessaggioCliente testo={messaggioIniziale} apertura={5} nomeCliente={nomeCliente} />
+      {/* Messaggio iniziale fisso */}
+      <MessaggioCliente
+        testo={messaggioIniziale}
+        apertura={5}
+        nomeCliente={nomeCliente}
+      />
 
       {messaggi.map((msg, i) => {
         if (msg.ruolo === "venditore") {
@@ -131,4 +138,3 @@ export default function ChatArea({ messaggi, loading, scenario }: ChatAreaProps)
     </div>
   );
 }
-
