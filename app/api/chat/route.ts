@@ -1,66 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 import type { MessaggioAPI, RispostaCliente } from "@/lib/types";
-import { getScenario } from "@/lib/scenari";
+import { getPersonaggio } from "@/lib/personaggi";
+import { getFase } from "@/lib/fasi";
+import { buildSystemPrompt } from "@/lib/prompt-builder";
+import type { Difficolta } from "@/lib/prompt-builder";
+import type { FaseId } from "@/lib/personaggi";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
-
-// Istruzioni sul formato JSON — aggiunte in coda a qualsiasi system prompt di scenario
-const FORMATO_JSON = `
-
-FORMATO RISPOSTA - Rispondi ESCLUSIVAMENTE con JSON valido. Zero testo fuori dal JSON.
-
-{
-  "messaggio_cliente": "testo naturale come lo direbbe il tuo personaggio",
-  "stato_emotivo": "neutro | interessato | dubbioso | irritato | convinto",
-  "apertura": numero tra 1 e 10,
-  "valutazione": {
-    "ascolto": numero tra 1 e 5,
-    "esplorazione": numero tra 1 e 5,
-    "empatia": numero tra 1 e 5,
-    "gestione_obiezione": numero tra 1 e 5
-  },
-  "feedback_breve": "1-2 frasi formative su cosa ha funzionato o meno nell'ultima risposta del venditore"
-}
-
-Scala apertura:
-- Venditore parla subito di prezzo/sconti o confronti → apertura 3-4
-- Venditore neutro o generico → apertura 4-5
-- Venditore fa domande genuine → apertura 5-6
-- Venditore ascolta e riformula → apertura 6-7
-- Venditore empatico, capisce cosa conta davvero → apertura 7-8
-- Venditore centra i valori giusti in modo autentico → apertura 8-9
-- Connessione piena, cliente si sente davvero capito → apertura 9-10`;
-
-// Fallback se nessuno scenario è specificato (scenario Luca-prezzo di default)
-const SYSTEM_PROMPT_FALLBACK = `Sei Luca, 48 anni. Imprenditore, pratico e diretto. Stai cercando una cucina nuova per la casa che hai appena finito di ristrutturare con tua moglie Anna.
-
-CHI SEI:
-Persona concreta, abituata a valutare bene le spese. Non sei avaro, ma vuoi capire cosa stai comprando. Hai già visitato un altro negozio e raccolto un preventivo. La cucina Scavolini ti è piaciuta, ma il prezzo è più alto di quanto avevi in mente.
-
-OBIEZIONE INIZIALE: "È bella, non lo nego... ma il prezzo è più alto di quanto pensavo."
-
-COSA TI PREOCCUPA DAVVERO (lo dici solo se ti senti ascoltato):
-Non vuoi fare una spesa che tra qualche anno si riveli sbagliata. Anna ti ha chiesto una cucina che duri, che sia facile da pulire e che non sembri già vecchia tra dieci anni. Sei disposto a investire di più, ma hai bisogno di sentire che vale.
-
-COME REAGISCI:
-Se il venditore parla subito di prezzo/sconti: rimani neutro, non ti apri.
-Se il venditore fa domande su di te e sulla casa: ti apri, l'apertura sale.
-Se il venditore spinge o mette fretta: ti irrigidisci.
-Se il venditore ascolta e riformula: inizi a fidarti.
-Frasi brevi quando hai dubbi, più articolate quando sei a tuo agio.`;
-
-function buildSystemPrompt(scenarioId?: string): string {
-  if (scenarioId) {
-    const scenario = getScenario(scenarioId);
-    if (scenario) {
-      return scenario.systemPrompt + FORMATO_JSON;
-    }
-  }
-  return SYSTEM_PROMPT_FALLBACK + FORMATO_JSON;
-}
 
 function parseRispostaClaude(testo: string): RispostaCliente {
   const parsed = JSON.parse(testo);
@@ -74,7 +23,7 @@ function parseRispostaClaude(testo: string): RispostaCliente {
     parsed.apertura < 1 ||
     parsed.apertura > 10
   ) {
-    throw new Error("JSON risposta Claude non valido: campi mancanti o errati");
+    throw new Error("JSON risposta Claude non valido");
   }
 
   return {
@@ -106,8 +55,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       messaggi,
-      scenarioId,
-    }: { messaggi: MessaggioAPI[]; scenarioId?: string } = body;
+      personaggioId,
+      faseId,
+      difficolta,
+    }: {
+      messaggi: MessaggioAPI[];
+      personaggioId?: string;
+      faseId?: FaseId;
+      difficolta?: Difficolta;
+    } = body;
 
     if (!messaggi || !Array.isArray(messaggi) || messaggi.length === 0) {
       return NextResponse.json(
@@ -116,7 +72,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const systemPrompt = buildSystemPrompt(scenarioId);
+    // Costruisce il system prompt dal personaggio + fase + difficoltÃ 
+    let systemPrompt: string;
+
+    if (personaggioId && faseId && difficolta) {
+      const personaggio = getPersonaggio(personaggioId);
+      const fase = getFase(faseId);
+
+      if (!personaggio || !fase) {
+        return NextResponse.json(
+          { errore: "Personaggio o fase non trovati" },
+          { status: 400 }
+        );
+      }
+
+      systemPrompt = buildSystemPrompt(personaggio, fase, difficolta);
+    } else {
+      return NextResponse.json(
+        { errore: "Parametri mancanti: personaggioId, faseId, difficolta" },
+        { status: 400 }
+      );
+    }
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
@@ -135,7 +111,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Estrai JSON anche se Claude aggiunge testo fuori (fallback robusto)
     let jsonDaParsare = testoRisposta.trim();
     const matchJson = testoRisposta.match(/\{[\s\S]*\}/);
     if (matchJson) {
@@ -164,12 +139,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         errore:
-          error instanceof Error
-            ? error.message
-            : "Errore interno del server",
+          error instanceof Error ? error.message : "Errore interno del server",
       },
       { status: 500 }
     );
   }
 }
-
