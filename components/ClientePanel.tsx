@@ -1,12 +1,17 @@
 "use client";
 
 import type { RispostaCliente, StatoEmotivo } from "@/lib/types";
-import type { Scenario } from "@/lib/scenari";
+interface ClienteInfo {
+  nomeCliente: string;
+  eta: number;
+  profilo: string;
+  emoji: string;
+}
 
 interface ClientePanelProps {
   stato: RispostaCliente | null;
   loading: boolean;
-  scenario?: Scenario;
+  scenario?: ClienteInfo;
 }
 
 const STATO_CONFIG: Record<
@@ -17,36 +22,36 @@ const STATO_CONFIG: Record<
     label: "Neutro",
     colore: "text-slate-600",
     bg: "bg-slate-100 border-slate-300",
-    emoji: "😐",
+    emoji: "ð",
     descrizione: "Ascolta, ma non si sbilancia",
   },
   interessato: {
     label: "Interessato",
     colore: "text-emerald-700",
     bg: "bg-emerald-50 border-emerald-300",
-    emoji: "🙂",
+    emoji: "ð",
     descrizione: "Si sta aprendo alla conversazione",
   },
   dubbioso: {
     label: "Dubbioso",
     colore: "text-amber-700",
     bg: "bg-amber-50 border-amber-300",
-    emoji: "🤔",
-    descrizione: "Ha perplessità, sta valutando",
+    emoji: "ð¤",
+    descrizione: "Ha perplessitÃ , sta valutando",
   },
   irritato: {
     label: "Irritato",
     colore: "text-red-700",
     bg: "bg-red-50 border-red-300",
-    emoji: "😑",
+    emoji: "ð",
     descrizione: "Si sta chiudendo, attenzione",
   },
   convinto: {
     label: "Convinto",
     colore: "text-blue-700",
     bg: "bg-blue-50 border-blue-300",
-    emoji: "😊",
-    descrizione: "Si fida, è pronto ad approfondire",
+    emoji: "ð",
+    descrizione: "Si fida, Ã¨ pronto ad approfondire",
   },
 };
 
@@ -92,10 +97,10 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
   const apertura = stato?.apertura ?? 5;
   const cfg = STATO_CONFIG[statoEmotivo];
 
-  const nomeCliente = scenario?.nomeCliente ?? "Luca";
-  const etaCliente = scenario?.eta ?? 48;
+  const nomeCliente = scenario?.nomeCliente ?? "Cliente";
+  const etaCliente = scenario?.eta ?? 0;
   const profiloCliente = scenario?.profilo ?? "Cliente Scavolini";
-  const emojiCliente = scenario?.emoji ?? "👤";
+  const emojiCliente = scenario?.emoji ?? "ð¤";
 
   return (
     <div className="flex flex-col gap-4">
@@ -105,7 +110,7 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
           className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl border-2 transition-all duration-500 ${cfg.bg}`}
         >
           {loading ? (
-            <span className="animate-pulse">⏳</span>
+            <span className="animate-pulse">â³</span>
           ) : stato ? (
             <span>{cfg.emoji}</span>
           ) : (
@@ -114,7 +119,7 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
         </div>
         <div>
           <p className="font-bold text-slate-800 text-lg">{nomeCliente}</p>
-          <p className="text-sm text-slate-500">{etaCliente} anni · {profiloCliente}</p>
+          <p className="text-sm text-slate-500">{etaCliente} anni Â· {profiloCliente}</p>
           <p className={`text-sm font-semibold ${cfg.colore}`}>{cfg.label}</p>
         </div>
       </div>
@@ -133,13 +138,12 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
       {!stato && (
         <div className="mt-2 text-xs text-slate-400 space-y-1">
           <p className="font-medium text-slate-500 mb-2">Come funziona:</p>
-          <p>↗ Ascolta → il cliente si apre</p>
-          <p>↗ Esplora → il cliente condivide</p>
-          <p>↘ Difendi → il cliente si chiude</p>
-          <p>↘ Spingi → il cliente si irrigidisce</p>
+          <p>â Ascolta â il cliente si apre</p>
+          <p>â Esplora â il cliente condivide</p>
+          <p>â Difendi â il cliente si chiude</p>
+          <p>â Spingi â il cliente si irrigidisce</p>
         </div>
       )}
     </div>
   );
 }
-
