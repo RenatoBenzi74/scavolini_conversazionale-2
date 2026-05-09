@@ -65,7 +65,7 @@ function StepIndicator({
                 : "bg-slate-200 text-slate-400"
             }`}
           >
-            {i < currentIndex ? "â" : i + 1}
+            {i < currentIndex ? "✓" : i + 1}
           </div>
           {i < STEP_ORDER.length - 1 && (
             <div
@@ -127,11 +127,11 @@ export default function WizardSelezione({
         </h2>
         <p className="text-sm text-slate-500 text-center mb-6">
           {step === "fase" && "Scegli da quale momento della trattativa vuoi iniziare"}
-          {step === "personaggio" && "Ogni cliente ha una personalitÃ  diversa â scegli con chi allenarti"}
-          {step === "difficolta" && "Stesso personaggio, comportamento diverso â scegli l'intensitÃ "}
+          {step === "personaggio" && "Ogni cliente ha una personalità diversa — scegli con chi allenarti"}
+          {step === "difficolta" && "Stesso personaggio, comportamento diverso — scegli l'intensità"}
         </p>
 
-        {/* STEP 1 â Fase */}
+        {/* STEP 1 — Fase */}
         {step === "fase" && (
           <div className="flex flex-col gap-3">
             {fasi.map((fase) => (
@@ -159,14 +159,14 @@ export default function WizardSelezione({
                   </p>
                 </div>
                 <span className="text-slate-300 group-hover:text-brand-400 text-lg flex-shrink-0 transition-colors">
-                   â
+                  →
                 </span>
               </button>
             ))}
           </div>
         )}
 
-        {/* STEP 2 â Personaggio */}
+        {/* STEP 2 — Personaggio */}
         {step === "personaggio" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {personaggi.map((p) => (
@@ -174,7 +174,7 @@ export default function WizardSelezione({
                 key={p.id}
                 onClick={() => {
                   setPersonaggioSelezionato(p);
-                    setStep("difficolta");
+                  setStep("difficolta");
                 }}
                 className="group text-left bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-brand-400 transition-all duration-200 active:scale-[0.98] flex flex-col gap-3"
                 type="button"
@@ -184,7 +184,7 @@ export default function WizardSelezione({
                   <div>
                     <p className="font-bold text-slate-800">{p.nome}</p>
                     <p className="text-xs text-slate-500">
-                      {p.eta} Â· {p.profilo}
+                      {p.eta} · {p.profilo}
                     </p>
                   </div>
                 </div>
@@ -214,7 +214,7 @@ export default function WizardSelezione({
           </div>
         )}
 
-        {/* STEP 3 â DifficoltÃ  */}
+        {/* STEP 3 — Difficoltà */}
         {step === "difficolta" && (
           <div className="flex flex-col gap-4">
             {(["facile", "medio", "difficile"] as Difficolta[]).map((d) => {
@@ -252,7 +252,7 @@ export default function WizardSelezione({
                       </span>
                     </div>
                     {difficoltaSelezionata === d && (
-                      <span className={`text-lg ${colors.text}`}>â</span>
+                      <span className={`text-lg ${colors.text}`}>✓</span>
                     )}
                   </div>
                   <p className="text-sm text-slate-600">{config.descrizione}</p>
@@ -288,7 +288,7 @@ export default function WizardSelezione({
                   className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl py-3 transition-all active:scale-[0.98]"
                   type="button"
                 >
-                  Inizia simulazione â
+                  Inizia simulazione →
                 </button>
               </div>
             )}
@@ -302,7 +302,7 @@ export default function WizardSelezione({
             className="mt-6 w-full text-sm text-slate-400 hover:text-slate-600 transition-colors py-2"
             type="button"
           >
-            â Torna indietro
+            ← Torna indietro
           </button>
         )}
       </div>
