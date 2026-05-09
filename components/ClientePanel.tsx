@@ -22,36 +22,36 @@ const STATO_CONFIG: Record<
     label: "Neutro",
     colore: "text-slate-600",
     bg: "bg-slate-100 border-slate-300",
-    emoji: "ð",
+    emoji: "😐",
     descrizione: "Ascolta, ma non si sbilancia",
   },
   interessato: {
     label: "Interessato",
     colore: "text-emerald-700",
     bg: "bg-emerald-50 border-emerald-300",
-    emoji: "ð",
+    emoji: "🙂",
     descrizione: "Si sta aprendo alla conversazione",
   },
   dubbioso: {
     label: "Dubbioso",
     colore: "text-amber-700",
     bg: "bg-amber-50 border-amber-300",
-    emoji: "ð¤",
-    descrizione: "Ha perplessitÃ , sta valutando",
+    emoji: "🤔",
+    descrizione: "Ha perplessità, sta valutando",
   },
   irritato: {
     label: "Irritato",
     colore: "text-red-700",
     bg: "bg-red-50 border-red-300",
-    emoji: "ð",
+    emoji: "😑",
     descrizione: "Si sta chiudendo, attenzione",
   },
   convinto: {
     label: "Convinto",
     colore: "text-blue-700",
     bg: "bg-blue-50 border-blue-300",
-    emoji: "ð",
-    descrizione: "Si fida, Ã¨ pronto ad approfondire",
+    emoji: "😊",
+    descrizione: "Si fida, è pronto ad approfondire",
   },
 };
 
@@ -100,7 +100,7 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
   const nomeCliente = scenario?.nomeCliente ?? "Cliente";
   const etaCliente = scenario?.eta ?? 0;
   const profiloCliente = scenario?.profilo ?? "Cliente Scavolini";
-  const emojiCliente = scenario?.emoji ?? "ð¤";
+  const emojiCliente = scenario?.emoji ?? "👤";
 
   return (
     <div className="flex flex-col gap-4">
@@ -110,7 +110,7 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
           className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl border-2 transition-all duration-500 ${cfg.bg}`}
         >
           {loading ? (
-            <span className="animate-pulse">â³</span>
+            <span className="animate-pulse">⏳</span>
           ) : stato ? (
             <span>{cfg.emoji}</span>
           ) : (
@@ -119,7 +119,7 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
         </div>
         <div>
           <p className="font-bold text-slate-800 text-lg">{nomeCliente}</p>
-          <p className="text-sm text-slate-500">{etaCliente} anni Â· {profiloCliente}</p>
+          <p className="text-sm text-slate-500">{etaCliente} anni · {profiloCliente}</p>
           <p className={`text-sm font-semibold ${cfg.colore}`}>{cfg.label}</p>
         </div>
       </div>
@@ -138,10 +138,10 @@ export default function ClientePanel({ stato, loading, scenario }: ClientePanelP
       {!stato && (
         <div className="mt-2 text-xs text-slate-400 space-y-1">
           <p className="font-medium text-slate-500 mb-2">Come funziona:</p>
-          <p>â Ascolta â il cliente si apre</p>
-          <p>â Esplora â il cliente condivide</p>
-          <p>â Difendi â il cliente si chiude</p>
-          <p>â Spingi â il cliente si irrigidisce</p>
+          <p>↗ Ascolta → il cliente si apre</p>
+          <p>↗ Esplora → il cliente condivide</p>
+          <p>↘ Difendi → il cliente si chiude</p>
+          <p>↘ Spingi → il cliente si irrigidisce</p>
         </div>
       )}
     </div>
