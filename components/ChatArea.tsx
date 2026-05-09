@@ -66,7 +66,7 @@ function IndicatoreTyping({ nomeCliente = "Cliente" }: { nomeCliente?: string })
             <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:300ms]" />
           </div>
         </div>
-        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente} sta scrivendoâ¦</p>
+        <p className="text-xs text-slate-400 mt-1 ml-1">{nomeCliente} sta scrivendo…</p>
       </div>
     </div>
   );
@@ -77,7 +77,7 @@ export default function ChatArea({
   loading,
   nomeCliente = "Cliente",
   messaggioIniziale = "Buongiorno.",
-  emojiCliente = "ð¤",
+  emojiCliente = "👤",
 }: ChatAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +94,7 @@ export default function ChatArea({
             {nomeCliente} sta aspettando
           </p>
           <p className="text-sm text-slate-500 leading-relaxed">
-            Inizia la conversazione â le tue parole hanno conseguenze reali.
+            Inizia la conversazione — le tue parole hanno conseguenze reali.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
             <p className="text-xs font-semibold text-amber-700 mb-1">
