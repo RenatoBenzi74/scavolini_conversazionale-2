@@ -88,7 +88,7 @@ function OverlaySuccesso({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
-        <div className="text-5xl mb-3">ð</div>
+        <div className="text-5xl mb-3">🎉</div>
         <h2 className="text-xl font-bold text-slate-800 mb-1">
           Fase superata!
         </h2>
@@ -99,7 +99,7 @@ function OverlaySuccesso({
         {/* Punteggi medi */}
         {medie && (
           <div className="bg-slate-50 rounded-xl p-4 mb-5 text-left">
-            <p className="text-xs font-semibold text-slate-500 up0ercase tracking-wide mb-3">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
               I tuoi punteggi medi
             </p>
             <div className="space-y-2">
@@ -139,13 +139,13 @@ function OverlaySuccesso({
               className="w-full bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl py-3 transition-all"
               type="button"
             >
-              Passa a: {prossima.emoji} {prossima.nome} â
+              Passa a: {prossima.emoji} {prossima.nome} →
             </button>
           )}
           {!prossima && (
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-1">
               <p className="text-sm font-semibold text-emerald-700">
-                ð Hai completato l&apos;intera trattativa!
+                🏆 Hai completato l&apos;intera trattativa!
               </p>
             </div>
           )}
@@ -154,7 +154,7 @@ function OverlaySuccesso({
             className="w-full border border-slate-300 text-slate-600 hover:border-slate-400 font-medium rounded-xl py-2.5 transition-all text-sm"
             type="button"
           >
-            âº Ripeti questa fase
+            ↺ Ripeti questa fase
           </button>
           <button
             onClick={onRicomincia}
@@ -182,7 +182,7 @@ export default function HomePage() {
   const [scambiPositivi, setScambiPositivi] = useState(0);
   const [faseCompletata, setFaseCompletata] = useState(false);
 
-  // ââ Avvio scenario dal wizard ââââââââââââââââââââââââââââââââââââââââââ
+  // ── Avvio scenario dal wizard ──────────────────────────────────────────────────────
   const avviaScenario = useCallback(
     (p: Personaggio, f: Fase, d: Difficolta) => {
       setPersonaggio(p);
@@ -204,7 +204,7 @@ export default function HomePage() {
     setFaseCompletata(false);
   }, []);
 
-  // ââ Invio messaggio ââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Invio messaggio ─────────────────────────────────────────────────────────────
   const inviaMessaggio = useCallback(
     async (testoVenditore: string) => {
       if (sim.loading || !personaggio || !faseCorrente || !difficolta) return;
@@ -282,7 +282,7 @@ export default function HomePage() {
     [sim.messaggi, sim.loading, personaggio, faseCorrente, difficolta, scambiPositivi]
   );
 
-  // ââ Progressione fase ââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Progressione fase ──────────────────────────────────────────────────────────
   const passaFaseSuccessiva = useCallback(() => {
     if (!faseCorrente || !difficolta) return;
     const prossima = getProssimFase(faseCorrente.id);
@@ -300,7 +300,7 @@ export default function HomePage() {
     setFaseCompletata(false);
   }, []);
 
-  // ââ Wizard âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Wizard ───────────────────────────────────────────────────────────────────
   if (!personaggio || !faseCorrente || !difficolta) {
     return (
       <WizardSelezione
@@ -311,7 +311,7 @@ export default function HomePage() {
     );
   }
 
-  // ââ Calcoli UI âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Calcoli UI ────────────────────────────────────────────────────────────────
   const messaggiCliente = sim.messaggi.filter((m) => m.ruolo === "cliente");
   const aperturaPrecedente =
     messaggiCliente.length >= 2
@@ -350,7 +350,7 @@ export default function HomePage() {
             title="Torna alla selezione"
             type="button"
           >
-            â
+            ←
           </button>
           <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
             <span className="text-white text-sm font-bold">S</span>
@@ -373,7 +373,7 @@ export default function HomePage() {
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              {personaggio.nome} Â· {personaggio.profilo}
+              {personaggio.nome} · {personaggio.profilo}
             </p>
           </div>
         </div>
@@ -404,7 +404,7 @@ export default function HomePage() {
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {delta > 0 ? "â" : "â"} {delta > 0 ? "+" : ""}{delta}
+              {delta > 0 ? "↑" : "↓"} {delta > 0 ? "+" : ""}{delta}
             </div>
           )}
 
@@ -413,7 +413,7 @@ export default function HomePage() {
             className="text-sm text-slate-500 hover:text-slate-800 border border-slate-300 hover:border-slate-400 rounded-lg px-3 py-1.5 transition-all"
             type="button"
           >
-            âº Ricomincia
+            ↺ Ricomincia
           </button>
         </div>
       </header>
@@ -448,13 +448,13 @@ export default function HomePage() {
 
           {sim.errore && (
             <div className="mx-4 mb-2 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-sm text-red-700 flex items-center gap-2">
-              <span>â ï¸</span>
+              <span>⚠️</span>
               <span>{sim.errore}</span>
               <button
                 onClick={() => setSim((p) => ({ ...p, errore: null }))}
                 className="ml-auto text-red-400 hover:text-red-600"
               >
-                â
+                ✕
               </button>
             </div>
           )}
@@ -532,7 +532,7 @@ export default function HomePage() {
             {scambiPositivi > 0 && !faseCompletata && (
               <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
                 <p className="text-xs font-semibold text-emerald-700">
-                  ð± Stai andando bene!
+                  🌱 Stai andando bene!
                 </p>
                 <p className="text-xs text-emerald-600 mt-0.5">
                   {scambiPositivi}/{faseCorrente.scambiSuccesso} scambi positivi consecutivi
