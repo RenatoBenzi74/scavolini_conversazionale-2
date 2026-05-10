@@ -8,6 +8,9 @@ interface ChatAreaProps {
   loading: boolean;
 }
 
+const PRIMA_BATTUTA_LUCA =
+  "Guardi, gliel'ho già detto al telefono — ho già sentito altri. Mi diranno tutti che Scavolini è un'altra cosa. Convincimi.";
+
 function MessaggioVenditore({ testo }: { testo: string }) {
   return (
     <div className="flex justify-end">
@@ -79,19 +82,15 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center space-y-3 max-w-sm">
           <div className="text-4xl">🏠</div>
-          <p className="font-semibold text-slate-700">
-            Luca sta aspettando
-          </p>
+          <p className="font-semibold text-slate-700">Luca sta aspettando</p>
           <p className="text-sm text-slate-500 leading-relaxed">
-            È venuto per informarsi su una cucina. Ha già sentito altri.
-            Inizia la conversazione — le tue parole hanno conseguenze reali.
+            Ha già visitato tre showroom. Sa quello che vuole — o almeno crede di saperlo.
+            Ogni parola che scegli ha conseguenze reali.
           </p>
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-left">
-            <p className="text-xs font-semibold text-amber-700 mb-1">
-              Situazione iniziale
-            </p>
+            <p className="text-xs font-semibold text-amber-700 mb-1">Luca apre così:</p>
             <p className="text-sm text-amber-800 italic">
-              &quot;Mi sembra un po&apos; caro sinceramente…&quot;
+              &quot;{PRIMA_BATTUTA_LUCA}&quot;
             </p>
           </div>
         </div>
@@ -101,13 +100,8 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
 
   return (
     <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-      {/* Messaggio iniziale di Luca (fisso) */}
-      {messaggi.length >= 0 && (
-        <MessaggioCliente
-          testo="Mi sembra un po' caro sinceramente…"
-          apertura={5}
-        />
-      )}
+      {/* Prima battuta di Luca (fissa) */}
+      <MessaggioCliente testo={PRIMA_BATTUTA_LUCA} apertura={4} />
 
       {messaggi.map((msg, i) => {
         if (msg.ruolo === "venditore") {

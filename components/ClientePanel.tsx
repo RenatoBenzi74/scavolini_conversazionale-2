@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { RispostaCliente, StatoEmotivo } from "@/lib/types";
 
 interface ClientePanelProps {
@@ -48,21 +49,32 @@ const STATO_CONFIG: Record<
   },
 };
 
-function AperturaBar({ valore }: { valore: number }) {
+function getEtichettaApertura(valore: number): string {
+  if (valore <= 2) return "Chiuso. Non ti sta ancora ascoltando.";
+  if (valore <= 4) return "Guardingo. Aspetta di capire dove vuoi arrivare.";
+  if (valore <= 6) return "Neutro. Qualcosa si sta muovendo.";
+  if (valore <= 8) return "Aperto. Sta iniziando a fidarsi.";
+  return "In connessione. La conversazione è diventata reale.";
+}
+
+function AperturaBar({ valore, delta }: { valore: number; delta: number }) {
   const pct = (valore / 10) * 100;
+  const [pulseClass, setPulseClass] = useState("");
+
+  useEffect(() => {
+    if (delta === 0) return;
+    const cls = delta > 0 ? "animate-pulse-green" : "animate-pulse-red";
+    setPulseClass(cls);
+    const timer = setTimeout(() => setPulseClass(""), 900);
+    return () => clearTimeout(timer);
+  }, [valore, delta]);
 
   let barColore = "bg-slate-400";
-  if (valore >= 8) barColore = "bg-emerald-500";
-  else if (valore >= 6) barColore = "bg-teal-500";
-  else if (valore >= 4) barColore = "bg-amber-400";
-  else if (valore >= 2) barColore = "bg-orange-500";
+  if (valore >= 9) barColore = "bg-emerald-500";
+  else if (valore >= 7) barColore = "bg-teal-500";
+  else if (valore >= 5) barColore = "bg-amber-400";
+  else if (valore >= 3) barColore = "bg-orange-500";
   else barColore = "bg-red-500";
-
-  let etichetta = "Molto chiuso";
-  if (valore >= 9) etichetta = "Molto aperto";
-  else if (valore >= 7) etichetta = "Aperto";
-  else if (valore >= 5) etichetta = "Parzialmente aperto";
-  else if (valore >= 3) etichetta = "Chiuso";
 
   return (
     <div className="w-full">
@@ -70,32 +82,53 @@ function AperturaBar({ valore }: { valore: number }) {
         <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
           Apertura relazionale
         </span>
-        <span className="text-sm font-bold text-slate-700">
+        <span className={`text-sm font-bold transition-all duration-300 ${
+          delta > 0 ? "text-emerald-600" : delta < 0 ? "text-red-500" : "text-slate-700"
+        }`}>
           {valore}/10
+          {delta !== 0 && (
+            <span className="ml-1 text-xs">
+              {delta > 0 ? `+${delta}` : delta}
+            </span>
+          )}
         </span>
       </div>
-      <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
+      <div className={`w-full bg-slate-200 rounded-full h-3 overflow-hidden ${pulseClass}`}>
         <div
           className={`h-3 rounded-full transition-all duration-700 ease-out ${barColore}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="text-xs text-slate-500 mt-1 text-right">{etichetta}</p>
+      <p className="text-xs text-slate-500 mt-1">{getEtichettaApertura(valore)}</p>
     </div>
   );
 }
 
 export default function ClientePanel({ stato, loading }: ClientePanelProps) {
   const statoEmotivo = stato?.stato_emotivo ?? "neutro";
-  const apertura = stato?.apertura ?? 5;
+  const apertura = stato?.apertura ?? 4;
   const cfg = STATO_CONFIG[statoEmotivo];
+
+  const prevAperturaRef = useRef<number>(4);
+  const [delta, setDelta] = useState(0);
+
+  useEffect(() => {
+    if (stato?.apertura !== undefined) {
+      const d = stato.apertura - prevAperturaRef.current;
+      setDelta(d);
+      prevAperturaRef.current = stato.apertura;
+    }
+  }, [stato?.apertura]);
 
   return (
     <div className="flex flex-col gap-4">
       {/* Header cliente */}
       <div className="flex items-center gap-3">
         <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl border-2 transition-all duration-500 ${cfg.bg}`}
+          className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl border-2 transition-all duration-500 ${cfg.bg} ${
+            delta > 0 ? "ring-2 ring-emerald-400 ring-offset-1" :
+            delta < 0 ? "ring-2 ring-red-400 ring-offset-1" : ""
+          }`}
         >
           {loading ? (
             <span className="animate-pulse">⏳</span>
@@ -105,9 +138,16 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
         </div>
         <div>
           <p className="font-bold text-slate-800 text-lg">Luca</p>
-          <p className="text-sm text-slate-500">42 anni · Cliente Scavolini</p>
+          <p className="text-sm text-slate-500">44 anni · Imprenditore edile</p>
           <p className={`text-sm font-semibold ${cfg.colore}`}>{cfg.label}</p>
         </div>
+      </div>
+
+      {/* Descrizione visibile */}
+      <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
+        <p className="text-sm text-slate-600 italic leading-relaxed">
+          "Ha le idee chiare su quello che vuole. O almeno così crede."
+        </p>
       </div>
 
       {/* Stato emotivo badge */}
@@ -118,18 +158,12 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
       </div>
 
       {/* Barra apertura */}
-      <AperturaBar valore={apertura} />
+      <AperturaBar valore={apertura} delta={delta} />
 
-      {/* Legenda stati */}
-      {!stato && (
-        <div className="mt-2 text-xs text-slate-400 space-y-1">
-          <p className="font-medium text-slate-500 mb-2">Come funziona:</p>
-          <p>↗ Ascolta → il cliente si apre</p>
-          <p>↗ Esplora → il cliente condivide</p>
-          <p>↘ Difendi → il cliente si chiude</p>
-          <p>↘ Spingi → il cliente si irrigidisce</p>
-        </div>
-      )}
+      {/* Riga discreta sotto l'indicatore */}
+      <p className="text-xs text-slate-400 leading-relaxed">
+        L'apertura di Luca cambia in base a come parli con lui.
+      </p>
     </div>
   );
 }

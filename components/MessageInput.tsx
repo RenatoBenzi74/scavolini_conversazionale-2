@@ -1,28 +1,42 @@
 "use client";
 
-import { useState, useRef, KeyboardEvent } from "react";
+import { useState, useRef, useEffect, KeyboardEvent } from "react";
 
 interface MessageInputProps {
   onInvia: (testo: string) => void;
   loading: boolean;
   disabled: boolean;
+  turnCount: number; // numero di turni completati — trigger per il delay
 }
 
 const SUGGERIMENTI = [
-  "Capisco la preoccupazione sul prezzo — cosa è più importante per lei?",
-  "Cosa sta cercando esattamente in questa cucina?",
-  "Certo, i nostri prezzi sono giustificati dalla qualità superiore.",
-  "Ha visto anche altri preventivi?",
+  "Capisco. Cosa è più importante per lei in questa cucina?",
+  "Che tipo di utilizzo immagina per questo spazio?",
+  "Ha visto qualcosa in particolare che l'ha colpita negli altri showroom?",
+  "Come mai ha deciso di includere Scavolini nella sua ricerca?",
 ];
 
 export default function MessageInput({
   onInvia,
   loading,
   disabled,
+  turnCount,
 }: MessageInputProps) {
   const [testo, setTesto] = useState("");
   const [mostraSuggerimenti, setMostraSuggerimenti] = useState(false);
+  const [suggerimentiVisibili, setSuggerimentiVisibili] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Delay 500ms prima che il toggle suggerimenti appaia dopo ogni turno
+  useEffect(() => {
+    setSuggerimentiVisibili(false);
+    if (turnCount === 0) {
+      setSuggerimentiVisibili(true);
+      return;
+    }
+    const timer = setTimeout(() => setSuggerimentiVisibili(true), 500);
+    return () => clearTimeout(timer);
+  }, [turnCount]);
 
   const handleInvia = () => {
     const trimmed = testo.trim();
@@ -48,24 +62,24 @@ export default function MessageInput({
 
   return (
     <div className="space-y-2">
-      {/* Suggerimenti */}
-      <div className="flex items-center gap-2">
+      {/* Toggle suggerimenti — discreto, con delay */}
+      <div className={`transition-opacity duration-300 ${suggerimentiVisibili ? "opacity-100" : "opacity-0"}`}>
         <button
           onClick={() => setMostraSuggerimenti(!mostraSuggerimenti)}
-          className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+          className="text-xs text-slate-400 hover:text-slate-500 transition-colors"
           type="button"
         >
-          {mostraSuggerimenti ? "▲ Nascondi suggerimenti" : "▼ Suggerimenti"}
+          {mostraSuggerimenti ? "▲ chiudi" : "Hai bisogno di un suggerimento?"}
         </button>
       </div>
 
-      {mostraSuggerimenti && (
+      {mostraSuggerimenti && suggerimentiVisibili && (
         <div className="grid grid-cols-1 gap-1">
           {SUGGERIMENTI.map((s, i) => (
             <button
               key={i}
               onClick={() => handleSuggerimento(s)}
-              className="text-left text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-slate-600 transition-colors"
+              className="text-left text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-2 text-slate-500 transition-colors"
               type="button"
             >
               {s}
@@ -83,7 +97,7 @@ export default function MessageInput({
           onKeyDown={handleKeyDown}
           placeholder={
             disabled
-              ? "Premi 'Nuova simulazione' per ricominciare"
+              ? "Premi 'Ricomincia' per una nuova simulazione"
               : "Rispondi a Luca… (Invio per inviare, Shift+Invio per andare a capo)"
           }
           disabled={loading || disabled}
