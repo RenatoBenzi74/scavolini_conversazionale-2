@@ -9,7 +9,7 @@ interface ChatAreaProps {
 }
 
 const PRIMA_BATTUTA_LUCA =
-  "Guardi, gliel'ho già detto al telefono — ho già sentito altri. Mi diranno tutti che Scavolini è un'altra cosa. Convincimi.";
+  "Senta, ci siamo già passati — tre showroom, tre discorsi uguali. Mi dica qualcosa che non ho già sentito.";
 
 function MessaggioVenditore({ testo }: { testo: string }) {
   return (
