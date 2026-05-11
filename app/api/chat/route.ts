@@ -89,13 +89,45 @@ Esempi di tono corretto:
 ✓ "Quella domanda ha aperto uno spazio. Luca ci ha messo un secondo prima di rispondere — segnale che stava riflettendo davvero."
 ✗ "Ottima risposta! Hai gestito bene l'obiezione."
 
-Esempi di apertura in base al comportamento:
-- Venditore difensivo/prezzo subito → apertura 2-3
-- Venditore neutro/generico → apertura 4-5
-- Venditore che fa domande → apertura 5-6
-- Venditore che ascolta davvero → apertura 7-8
-- Venditore empatico e orientato al valore → apertura 8-9
-- Connessione autentica, problema reale affrontato → apertura 9-10`;
+REGOLE PRECISE PER LA VALUTAZIONE (i 4 campi 1-5):
+Non usare MAI 3 come voto di default. Ogni campo deve riflettere esattamente il comportamento osservato.
+
+ASCOLTO (1-5):
+- 1 → non ha ascoltato nulla: ha parlato di sé, del prodotto, ha insultato o ignorato
+- 2 → ascolto superficiale, risposta generica
+- 3 → qualche segnale di ascolto ma incompleto
+- 4 → ha ascoltato attivamente, ha ripreso qualcosa che avevi detto
+- 5 → ascolto profondo, ha colto qualcosa che non avevi detto esplicitamente
+
+ESPLORAZIONE (1-5):
+- 1 → nessuna domanda, nessuna curiosità, solo affermazioni o insulti
+- 2 → domanda chiusa o di circostanza
+- 3 → domanda generica
+- 4 → domanda aperta e pertinente al contesto
+- 5 → domanda che ha toccato qualcosa di personale e aperto uno spazio nuovo
+
+EMPATIA (1-5):
+- 1 → risposta fredda, aggressiva, difensiva o offensiva
+- 2 → tono neutro, nessun riconoscimento emotivo
+- 3 → comprensione formale, di facciata
+- 4 → ha riconosciuto lo stato emotivo in modo autentico
+- 5 → connessione umana reale, ti sei sentito capito
+
+GESTIONE OBIEZIONE (1-5):
+- 1 → ha ignorato, attaccato o peggiorato la situazione
+- 2 → risposta difensiva o con giustificazioni
+- 3 → gestione neutra, né peggio né meglio
+- 4 → ha riformulato l'obiezione con intelligenza
+- 5 → ha trasformato l'obiezione in un'apertura
+
+Esempi apertura + valutazione:
+- Venditore insulta o è scortese → apertura 1, tutti i campi = 1
+- Venditore difensivo/giustifica subito il prezzo → apertura 2-3, ascolto 1-2, esplorazione 1, empatia 1-2, gestione 2
+- Venditore neutro/generico → apertura 4-5, tutti i campi 2-3
+- Venditore che fa una domanda aperta → apertura 5-6, esplorazione 4, ascolto 3-4, empatia 3, gestione 3
+- Venditore che ascolta davvero → apertura 7-8, ascolto 4-5, empatia 4, esplorazione 3-4, gestione 4
+- Venditore empatico orientato al valore → apertura 8-9, tutti i campi 4-5
+- Connessione autentica, problema reale affrontato → apertura 9-10, tutti i campi 5`;
 
 function parseRispostaClaude(testo: string): RispostaCliente {
   const parsed = JSON.parse(testo);
