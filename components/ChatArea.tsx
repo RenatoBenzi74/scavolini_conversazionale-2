@@ -73,7 +73,7 @@ export default function ChatArea({ messaggi, loading }: ChatAreaProps) {
           <div>
             <p className="font-semibold text-slate-700 text-base">Luca è appena entrato.</p>
             <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-              Ha già visitato tre showroom. È guardingo. Non si fida facilmente.
+              È guardingo, sembra diffidente, probabilmente non è il primo negozio in cui entra...
             </p>
           </div>
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-left space-y-2">
