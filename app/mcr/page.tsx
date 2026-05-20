@@ -1,8 +1,8 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Metodo delle Competenze Risonanti — Noi²",
-  description: "Il metodo MCR per la formazione relazionale nelle vendite.",
+  title: "Noi² — Metodo delle Competenze Risonanti",
+  description: "Le persone cambiano quando inciampano. Non quando capiscono.",
 };
 
 export default function MCRPage() {
@@ -10,108 +10,90 @@ export default function MCRPage() {
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
 
       {/* Nav */}
-      <nav className="px-6 py-4 flex items-center justify-between border-b border-slate-800">
+      <nav className="px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-teal-500 rounded-md flex items-center justify-center">
-            <span className="text-white text-xs font-bold">N²</span>
+            <span className="text-slate-900 text-xs font-black">N²</span>
           </div>
-          <span className="text-sm font-semibold text-slate-300">Noi²</span>
+          <span className="text-sm font-semibold text-slate-300 tracking-wide">Noi²</span>
         </div>
         <Link
           href="/"
-          className="text-sm text-slate-400 hover:text-white transition-colors border border-slate-700 hover:border-slate-500 rounded-lg px-4 py-1.5"
+          className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
-          ← Torna al simulatore
+          ← torna al simulatore
         </Link>
       </nav>
 
       {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center px-4 py-20 space-y-8 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/30 rounded-full px-4 py-1.5 text-sm text-teal-400 font-medium">
-          Metodo · Formazione · Relazione
+      <section className="flex-1 flex flex-col items-center justify-center px-6 py-16 max-w-lg mx-auto w-full space-y-14">
+
+        {/* Headline */}
+        <div className="text-center space-y-5">
+          <p className="text-xs font-bold text-teal-400 uppercase tracking-widest">
+            Metodo delle Competenze Risonanti
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold leading-snug text-white">
+            Le persone cambiano<br />
+            quando inciampano.
+          </h1>
+          <p className="text-slate-400 text-base leading-relaxed">
+            Non quando capiscono —<br />
+            quando <em>sentono</em> lo spostamento sotto i piedi.
+          </p>
         </div>
 
-        <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-          Il Metodo delle<br />
-          <span className="text-teal-400">Competenze Risonanti</span>
-        </h1>
+        {/* Divisore */}
+        <div className="w-8 h-px bg-teal-500/50" />
 
-        <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
-          Non si vende convincendo. Si vende creando uno spazio
-          in cui l'altro si sente capito abbastanza da voler continuare a parlare.
-        </p>
-
-        <div className="w-16 h-px bg-slate-700" />
-
-        {/* Cosa è MCR */}
-        <div className="text-left w-full space-y-6">
-          <h2 className="text-xl font-semibold text-white text-center">Di cosa si tratta</h2>
-          <div className="grid sm:grid-cols-3 gap-4">
-            {[
-              {
-                icon: "👂",
-                titolo: "Ascolto esplorativo",
-                testo: "Ascoltare non per rispondere, ma per capire davvero cosa sta cercando l'altro — anche quello che non dice.",
-              },
-              {
-                icon: "🔗",
-                titolo: "Connessione emotiva",
-                testo: "Creare il contatto umano prima del contatto commerciale. La fiducia precede la decisione.",
-              },
-              {
-                icon: "🔄",
-                titolo: "Flessibilità comunicativa",
-                testo: "Adattarsi in tempo reale: leggere i segnali, cambiare registro, gestire la resistenza senza forzare.",
-              },
-            ].map((c) => (
-              <div key={c.titolo} className="bg-slate-800/60 border border-slate-700 rounded-xl p-5 space-y-2">
-                <span className="text-2xl">{c.icon}</span>
-                <h3 className="font-semibold text-white text-sm">{c.titolo}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{c.testo}</p>
-              </div>
-            ))}
+        {/* Le tre competenze — minimale */}
+        <div className="w-full space-y-3">
+          {[
+            { n: "01", nome: "Ascolto Partecipativo" },
+            { n: "02", nome: "Agilità Cognitiva" },
+            { n: "03", nome: "Connessione Emotiva" },
+          ].map((c) => (
+            <div
+              key={c.n}
+              className="flex items-center gap-4 border border-slate-800 rounded-xl px-5 py-4 hover:border-slate-700 transition-colors"
+            >
+              <span className="text-xs font-mono text-teal-500 w-6">{c.n}</span>
+              <span className="text-slate-200 font-medium text-sm">{c.nome}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-4 border border-teal-500/20 bg-teal-500/5 rounded-xl px-5 py-4">
+            <span className="text-xs font-mono text-teal-400 w-6">↑</span>
+            <span className="text-teal-300 font-semibold text-sm">Presenza Risonante</span>
           </div>
         </div>
 
-        <div className="w-16 h-px bg-slate-700" />
+        {/* Divisore */}
+        <div className="w-8 h-px bg-slate-700" />
 
-        {/* Il simulatore come strumento MCR */}
-        <div className="bg-slate-800/40 border border-slate-700 rounded-2xl p-6 text-left w-full space-y-3">
-          <p className="text-xs font-bold text-teal-400 uppercase tracking-wide">Il simulatore che hai appena usato</p>
-          <p className="text-slate-300 leading-relaxed">
-            Luca non è un quiz. È un ambiente di pratica progettato con il Metodo MCR:
-            ogni sua reazione è calibrata su competenze reali — ascolto, esplorazione, gestione della resistenza.
-            Il feedback che ricevi non giudica. Osserva.
-          </p>
-          <p className="text-slate-400 text-sm">
-            Questo è uno strumento di allenamento relazionale. Il metodo completo si impara in aula, con Renato e il team Noi².
-          </p>
-        </div>
-
-        <div className="w-16 h-px bg-slate-700" />
+        {/* Citazione */}
+        <p className="text-center text-slate-500 text-sm leading-relaxed italic max-w-xs">
+          "Non è la somma di due persone. È quello che nasce quando due persone si incontrano davvero."
+        </p>
 
         {/* CTA */}
-        <div className="space-y-4 text-center">
-          <p className="text-slate-400">Vuoi portare il Metodo MCR nella tua rete vendita?</p>
+        <div className="text-center space-y-3 w-full">
           <a
             href="mailto:info@noi2.it"
-            className="inline-flex items-center gap-2 bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold rounded-xl px-8 py-3.5 transition-all active:scale-95 text-base"
+            className="block w-full bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold rounded-xl px-6 py-3.5 transition-all active:scale-95 text-sm text-center"
           >
-            Scrivici →
+            Scrivici
           </a>
           <p className="text-xs text-slate-600">
-            Risponde Renato. Di solito entro 24 ore.
+            Risponde Renato.
           </p>
         </div>
+
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 px-6 py-4 text-center">
-        <p className="text-xs text-slate-600">
-          Noi² · Formazione relazionale per le vendite ·{" "}
-          <Link href="/" className="hover:text-slate-400 transition-colors underline underline-offset-2">
-            Torna al simulatore
-          </Link>
+      <footer className="px-6 py-4 text-center">
+        <p className="text-xs text-slate-700">
+          Noi² · Genova, 2026
         </p>
       </footer>
     </div>
