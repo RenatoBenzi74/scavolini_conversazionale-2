@@ -9,11 +9,19 @@ interface MessageInputProps {
   turnCount: number; // numero di turni completati — trigger per il delay
 }
 
-const SUGGERIMENTI = [
-  "Capisco. Cosa è più importante per lei in questa cucina?",
+// Suggerimenti dinamici per fase
+const SUGGERIMENTI_ACCOGLIENZA = [
+  "Buongiorno! Si accomodi pure — è qui per la prima volta?",
+  "Buongiorno. Stavo proprio rimettendo in ordine — cosa la porta da noi oggi?",
+  "Buongiorno. Ha già un'idea di quello che cerca, o è ancora nella fase di esplorazione?",
+  "Buongiorno. Prenda il suo tempo — se ha domande sono qui.",
+];
+
+const SUGGERIMENTI_CONVERSAZIONE = [
+  "Cosa è più importante per lei in questa cucina?",
   "Che tipo di utilizzo immagina per questo spazio?",
   "Ha visto qualcosa in particolare che l'ha colpita negli altri showroom?",
-  "Come mai ha deciso di includere Scavolini nella sua ricerca?",
+  "Cosa intende esattamente quando dice che vuole qualcosa che duri?",
 ];
 
 export default function MessageInput({
@@ -75,7 +83,7 @@ export default function MessageInput({
 
       {mostraSuggerimenti && suggerimentiVisibili && (
         <div className="grid grid-cols-1 gap-1">
-          {SUGGERIMENTI.map((s, i) => (
+          {(turnCount === 0 ? SUGGERIMENTI_ACCOGLIENZA : SUGGERIMENTI_CONVERSAZIONE).map((s, i) => (
             <button
               key={i}
               onClick={() => handleSuggerimento(s)}
@@ -98,6 +106,8 @@ export default function MessageInput({
           placeholder={
             disabled
               ? "Premi 'Ricomincia' per una nuova simulazione"
+              : turnCount === 0
+              ? "Come accogli Luca? Scrivi il tuo saluto…"
               : "Rispondi a Luca… (Invio per inviare, Shift+Invio per andare a capo)"
           }
           disabled={loading || disabled}
