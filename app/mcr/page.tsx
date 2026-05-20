@@ -29,7 +29,7 @@ export default function MCRPage() {
       <section className="flex-1 flex flex-col items-center justify-center px-6 py-16 max-w-lg mx-auto w-full space-y-14">
 
         {/* Headline */}
-        <div className="text-center space-y-5">
+        <div className="text-center space-y-6">
           <p className="text-xs font-bold text-teal-400 uppercase tracking-widest">
             Metodo delle Competenze Risonanti
           </p>
@@ -37,16 +37,17 @@ export default function MCRPage() {
             Le persone cambiano<br />
             quando inciampano.
           </h1>
-          <p className="text-slate-400 text-base leading-relaxed">
-            Non quando capiscono —<br />
-            quando <em>sentono</em> lo spostamento sotto i piedi.
+          <p className="text-slate-400 text-sm leading-relaxed text-left border-l-2 border-teal-500/30 pl-4">
+            Perché quando inciampi cerchi di non cadere, ricerchi disperatamente con tutto te stesso
+            l&apos;equilibrio, la tua attenzione si alza al massimo; in quella momentanea parentesi
+            in cui si sperimenta lo smarrimento tutto il nostro essere si predispone al ritrovarsi.
           </p>
         </div>
 
         {/* Divisore */}
         <div className="w-8 h-px bg-teal-500/50" />
 
-        {/* Le tre competenze — minimale */}
+        {/* Le tre competenze */}
         <div className="w-full space-y-3">
           {[
             { n: "01", nome: "Ascolto Partecipativo" },
@@ -65,20 +66,26 @@ export default function MCRPage() {
             <span className="text-xs font-mono text-teal-400 w-6">↑</span>
             <span className="text-teal-300 font-semibold text-sm">Presenza Risonante</span>
           </div>
+
+          {/* Teaser dopo le competenze */}
+          <p className="text-slate-500 text-sm pt-2 text-center">
+            Vuoi capire come si allenano — e cosa cambia quando le porti sul campo?
+          </p>
         </div>
 
         {/* Divisore */}
         <div className="w-8 h-px bg-slate-700" />
 
-        {/* Citazione */}
-        <p className="text-center text-slate-500 text-sm leading-relaxed italic max-w-xs">
-          "Non è la somma di due persone. È quello che nasce quando due persone si incontrano davvero."
+        {/* Citazione finale */}
+        <p className="text-center text-slate-400 text-sm leading-relaxed italic max-w-xs">
+          "Un &lsquo;noi&rsquo; non è la somma di più persone.<br />
+          È quando le persone si incontrano davvero."
         </p>
 
         {/* CTA */}
         <div className="text-center space-y-3 w-full">
           <a
-            href="mailto:info@noi2.it"
+            href="mailto:renato.benzi.74@gmail.com"
             className="block w-full bg-teal-500 hover:bg-teal-400 text-slate-900 font-bold rounded-xl px-6 py-3.5 transition-all active:scale-95 text-sm text-center"
           >
             Scrivici
