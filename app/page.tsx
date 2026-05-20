@@ -12,7 +12,9 @@ import ChatArea from "@/components/ChatArea";
 import FeedbackPanel from "@/components/FeedbackPanel";
 import MessageInput from "@/components/MessageInput";
 
-const MAX_TURNI = 8;
+const MAX_TURNI = 8;       // tetto massimo
+const MIN_TURNI = 4;       // minimo prima di chiusura anticipata
+const SOGLIA_SUCCESSO = 8; // apertura >= questo valore → chiudi prima
 
 const STATO_INIZIALE: StatoSimulazione = {
   messaggi: [],
@@ -252,7 +254,7 @@ function DebriefingScreen({
             Ricomincia con Luca
           </button>
           <a
-            href="#mcr"
+            href="/mcr"
             className="flex-shrink-0 text-center text-sm text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-xl px-5 py-3.5 transition-all"
           >
             Scopri il Metodo MCR →
@@ -270,7 +272,10 @@ export default function HomePage() {
   const [mostraDebrief, setMostraDebrief] = useState(false);
 
   const turniCompletati = sim.messaggi.filter((m) => m.ruolo === "venditore").length;
-  const conversazioneTerminata = turniCompletati >= MAX_TURNI;
+  const ultimaApertura = sim.statoCorrente?.apertura ?? 0;
+  const conversazioneTerminata =
+    turniCompletati >= MAX_TURNI ||
+    (turniCompletati >= MIN_TURNI && ultimaApertura >= SOGLIA_SUCCESSO);
 
   const aperturaPerTurno = sim.messaggi
     .filter((m) => m.ruolo === "cliente")
@@ -329,9 +334,10 @@ export default function HomePage() {
           loading: false,
         }));
 
-        // Auto-termina dopo MAX_TURNI
-        if (nuoviTurni >= MAX_TURNI) {
-          setTimeout(() => setMostraDebrief(true), 800);
+        // Chiusura: MAX_TURNI raggiunto OPPURE apertura alta dopo MIN_TURNI
+        const aperturaRaggiunta = risposta.apertura >= SOGLIA_SUCCESSO;
+        if (nuoviTurni >= MAX_TURNI || (nuoviTurni >= MIN_TURNI && aperturaRaggiunta)) {
+          setTimeout(() => setMostraDebrief(true), 1200);
         }
       } catch (err) {
         setSim((prev) => ({
@@ -560,14 +566,14 @@ export default function HomePage() {
           <p className="text-xs text-slate-400">
             Questo simulatore è costruito con il{" "}
             <a
-              href="#mcr"
+              href="/mcr"
               className="hover:text-slate-600 underline underline-offset-2 transition-colors"
             >
               Metodo delle Competenze Risonanti
             </a>{" "}
             ·{" "}
             <a
-              href="#noi2"
+              href="/mcr"
               className="hover:text-slate-600 underline underline-offset-2 transition-colors"
             >
               Noi²

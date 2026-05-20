@@ -91,6 +91,7 @@ function AperturaBar({ valore, delta }: { valore: number; delta: number }) {
 }
 
 export default function ClientePanel({ stato, loading }: ClientePanelProps) {
+  const hasStarted = stato !== null;
   const statoEmotivo = stato?.stato_emotivo ?? "neutro";
   const apertura = stato?.apertura ?? 4;
   const cfg = STATO_CONFIG[statoEmotivo];
@@ -127,8 +128,8 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
       <div className="flex items-center gap-3">
         <div
           className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl border-2 transition-all duration-500 ${cfg.bg} ${
-            delta > 0 ? "ring-2 ring-emerald-400 ring-offset-1" :
-            delta < 0 ? "ring-2 ring-red-400 ring-offset-1" : ""
+            (hasStarted && delta > 0) ? "ring-2 ring-emerald-400 ring-offset-1" :
+            (hasStarted && delta < 0) ? "ring-2 ring-red-400 ring-offset-1" : ""
           }`}
         >
           {loading ? (
@@ -157,7 +158,7 @@ export default function ClientePanel({ stato, loading }: ClientePanelProps) {
       </div>
 
       {/* Barra apertura */}
-      <AperturaBar valore={apertura} delta={delta} />
+      <AperturaBar valore={apertura} delta={hasStarted ? delta : 0} />
 
       <p className="text-xs text-slate-400 leading-relaxed">
         L'apertura di Luca cambia in base a come parli con lui.
