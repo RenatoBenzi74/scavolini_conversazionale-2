@@ -11,15 +11,13 @@ export default function MCRPage() {
 
       {/* Nav */}
       <nav className="px-6 py-5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-teal-500 rounded-md flex items-center justify-center">
-            <span className="text-slate-900 text-xs font-black">Noi²</span>
         <Link
           href="/"
           className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
         >
           ← torna al simulatore
         </Link>
+        <span className="text-sm font-bold text-white">Noi²</span>
       </nav>
 
       {/* Hero */}
@@ -59,9 +57,8 @@ export default function MCRPage() {
               <span className="text-slate-200 font-medium text-sm">{c.nome}</span>
             </div>
           ))}
-        {/* Teaser dopo le competenze */}
           <p className="text-slate-500 text-sm pt-2 text-center">
-            Vuoi capire come si allenano  e cosa cambia quando le porti sul campo?
+            Vuoi capire come si allenano e cosa cambia quando le porti sul campo?
           </p>
         </div>
 
@@ -70,8 +67,8 @@ export default function MCRPage() {
 
         {/* Citazione finale */}
         <p className="text-center text-slate-400 text-sm leading-relaxed italic max-w-xs">
-          "Un &lsquo;noi&rsquo; non è la somma di più persone.<br />
-          È quando le persone si incontrano davvero."
+          &ldquo;Un &lsquo;noi&rsquo; non è la somma di più persone.<br />
+          È quando le persone si incontrano davvero.&rdquo;
         </p>
 
         {/* CTA */}
@@ -83,7 +80,7 @@ export default function MCRPage() {
             Scrivici
           </a>
           <p className="text-xs text-slate-600">
-            ti risponderemo entro 24 ore
+            risponderemo entro 24 ore
           </p>
         </div>
 
