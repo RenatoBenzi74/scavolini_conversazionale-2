@@ -4,6 +4,7 @@ import type { MessaggioAPI, RispostaCliente } from "@/lib/types";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  maxRetries: 4,
 });
 
 const SYSTEM_PROMPT = `Sei Luca, 42 anni. Imprenditore edile, pratico e concreto. Stai valutando una cucina Scavolini per la casa che stai finendo di ristrutturare.
@@ -138,6 +139,33 @@ function parseRispostaClaude(testo: string): RispostaCliente {
   };
 }
 
+
+async function callWithFallback(
+  messaggi: MessaggioAPI[],
+  systemPrompt: string
+): Promise<Anthropic.Message> {
+  const params = {
+    max_tokens: 1024 as const,
+    system: systemPrompt,
+    messages: messaggi as Anthropic.MessageParam[],
+  };
+  try {
+    return await client.messages.create({
+      ...params,
+      model: "claude-haiku-4-5-20251001",
+    });
+  } catch (primaryErr) {
+    if (primaryErr instanceof Anthropic.APIError && primaryErr.status === 529) {
+      console.warn("Haiku 4-5 overloaded, fallback a claude-3-haiku");
+      return await client.messages.create({
+        ...params,
+        model: "claude-3-haiku-20240307",
+      });
+    }
+    throw primaryErr;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -157,12 +185,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: messaggi,
-    });
+    const response = await callWithFallback(messaggi, SYSTEM_PROMPT);
 
     const testoRisposta =
       response.content[0].type === "text" ? response.content[0].text : "";
