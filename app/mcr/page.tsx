@@ -13,10 +13,7 @@ export default function MCRPage() {
       <nav className="px-6 py-5 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 bg-teal-500 rounded-md flex items-center justify-center">
-            <span className="text-slate-900 text-xs font-black">N²</span>
-          </div>
-          <span className="text-sm font-semibold text-slate-300 tracking-wide">Noi²</span>
-        </div>
+            <span className="text-slate-900 text-xs font-black">Noi²</span>
         <Link
           href="/"
           className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
@@ -62,14 +59,9 @@ export default function MCRPage() {
               <span className="text-slate-200 font-medium text-sm">{c.nome}</span>
             </div>
           ))}
-          <div className="flex items-center gap-4 border border-teal-500/20 bg-teal-500/5 rounded-xl px-5 py-4">
-            <span className="text-xs font-mono text-teal-400 w-6">↑</span>
-            <span className="text-teal-300 font-semibold text-sm">Presenza Risonante</span>
-          </div>
-
-          {/* Teaser dopo le competenze */}
+        {/* Teaser dopo le competenze */}
           <p className="text-slate-500 text-sm pt-2 text-center">
-            Vuoi capire come si allenano — e cosa cambia quando le porti sul campo?
+            Vuoi capire come si allenano  e cosa cambia quando le porti sul campo?
           </p>
         </div>
 
@@ -91,7 +83,7 @@ export default function MCRPage() {
             Scrivici
           </a>
           <p className="text-xs text-slate-600">
-            Risponde Renato.
+            ti risponderemo entro 24 ore
           </p>
         </div>
 
