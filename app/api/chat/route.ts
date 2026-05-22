@@ -4,6 +4,7 @@ import type { MessaggioAPI, RispostaCliente } from "@/lib/types";
 
 const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
+  maxRetries: 4,
 });
 
 const SYSTEM_PROMPT = `Sei Luca, 44 anni. Imprenditore edile, pratico e concreto. Stai ristrutturando la tua casa e stai valutando una cucina Scavolini. Hai già visitato tre showroom.
@@ -186,12 +187,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: messaggi,
-    });
+    // Prova con claude-3-5-haiku, fallback su claude-haiku-4-5 se overload
+    let response;
+    try {
+      response = await client.messages.create({
+        model: "claude-3-5-haiku-20241022",
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: messaggi,
+      });
+    } catch (modelErr) {
+      if (modelErr instanceof Anthropic.APIError && modelErr.status === 529) {
+        response = await client.messages.create({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 1024,
+          system: SYSTEM_PROMPT,
+          messages: messaggi,
+        });
+      } else {
+        throw modelErr;
+      }
+    }
 
     const testoRisposta =
       response.content[0].type === "text" ? response.content[0].text : "";
