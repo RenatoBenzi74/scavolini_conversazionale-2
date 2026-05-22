@@ -152,14 +152,14 @@ async function callWithFallback(
   try {
     return await client.messages.create({
       ...params,
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-3-5-haiku-20241022",
     });
   } catch (primaryErr) {
     if (primaryErr instanceof Anthropic.APIError && primaryErr.status === 529) {
       console.warn("Haiku 4-5 overloaded, fallback a claude-3-haiku");
       return await client.messages.create({
         ...params,
-        model: "claude-3-haiku-20240307",
+        model: "claude-haiku-4-5-20251001",
       });
     }
     throw primaryErr;
