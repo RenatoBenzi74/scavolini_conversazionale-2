@@ -53,6 +53,8 @@ export default function MessageInput({
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SR || bloccatoRef.current) return;
 
+    // Se il cliente sta parlando, si ferma: il venditore prende la parola
+    window.speechSynthesis?.cancel();
     setErroreVoce(null);
     setMostraSuggerimenti(false);
     trascrizioneRef.current = "";

@@ -14,6 +14,7 @@ import ChatArea from "@/components/ChatArea";
 import FeedbackPanel from "@/components/FeedbackPanel";
 import MessageInput from "@/components/MessageInput";
 import WizardSelezione from "@/components/WizardSelezione";
+import { useVoceCliente } from "@/lib/useVoceCliente";
 
 const STATO_INIZIALE: StatoSimulazione = {
   messaggi: [],
@@ -182,9 +183,13 @@ export default function HomePage() {
   const [scambiPositivi, setScambiPositivi] = useState(0);
   const [faseCompletata, setFaseCompletata] = useState(false);
 
+  // Voce del cliente (sintesi vocale del browser)
+  const voce = useVoceCliente();
+
   // ── Avvio scenario dal wizard ──────────────────────────────────────────────────────
   const avviaScenario = useCallback(
     (p: Personaggio, f: Fase, d: Difficolta) => {
+      voce.ferma();
       setPersonaggio(p);
       setFaseCorrente(f);
       setDifficolta(d);
@@ -192,17 +197,18 @@ export default function HomePage() {
       setScambiPositivi(0);
       setFaseCompletata(false);
     },
-    []
+    [voce.ferma]
   );
 
   const tornaAlWizard = useCallback(() => {
+    voce.ferma();
     setPersonaggio(null);
     setFaseCorrente(null);
     setDifficolta(null);
     setSim(STATO_INIZIALE);
     setScambiPositivi(0);
     setFaseCompletata(false);
-  }, []);
+  }, [voce.ferma]);
 
   // ── Invio messaggio ─────────────────────────────────────────────────────────────
   const inviaMessaggio = useCallback(
@@ -261,6 +267,9 @@ export default function HomePage() {
           loading: false,
         }));
 
+        // Il cliente risponde anche a voce (se attivata)
+        voce.parla(risposta.messaggio_cliente);
+
         // Rilevamento successo fase
         if (risposta.apertura >= faseCorrente.sogliaSuccesso) {
           const nuoviScambi = scambiPositivi + 1;
@@ -279,11 +288,12 @@ export default function HomePage() {
         }));
       }
     },
-    [sim.messaggi, sim.loading, personaggio, faseCorrente, difficolta, scambiPositivi]
+    [sim.messaggi, sim.loading, personaggio, faseCorrente, difficolta, scambiPositivi, voce.parla]
   );
 
   // ── Progressione fase ──────────────────────────────────────────────────────────
   const passaFaseSuccessiva = useCallback(() => {
+    voce.ferma();
     if (!faseCorrente || !difficolta) return;
     const prossima = getProssimFase(faseCorrente.id);
     if (prossima) {
@@ -292,13 +302,14 @@ export default function HomePage() {
       setScambiPositivi(0);
       setFaseCompletata(false);
     }
-  }, [faseCorrente, difficolta]);
+  }, [faseCorrente, difficolta, voce.ferma]);
 
   const ripetiFase = useCallback(() => {
+    voce.ferma();
     setSim(STATO_INIZIALE);
     setScambiPositivi(0);
     setFaseCompletata(false);
-  }, []);
+  }, [voce.ferma]);
 
   // ── Wizard ───────────────────────────────────────────────────────────────────
   if (!personaggio || !faseCorrente || !difficolta) {
@@ -406,6 +417,31 @@ export default function HomePage() {
             >
               {delta > 0 ? "↑" : "↓"} {delta > 0 ? "+" : ""}{delta}
             </div>
+          )}
+
+          {voce.supportato && (
+            <button
+              onClick={() => {
+                const nuovo = !voce.attiva;
+                voce.setAttiva(nuovo);
+                // Cliccando per attivare, il cliente dice subito la prima frase
+                if (nuovo && sim.messaggi.length === 0 && personaggio && faseCorrente) {
+                  setTimeout(
+                    () => voce.parla(personaggio.messaggiIniziali[faseCorrente.id]),
+                    0
+                  );
+                }
+              }}
+              title={voce.attiva ? "Disattiva la voce del cliente" : "Attiva la voce del cliente"}
+              className={`text-sm border rounded-lg px-3 py-1.5 transition-all ${
+                voce.attiva
+                  ? "bg-brand-50 border-brand-300 text-brand-700"
+                  : "text-slate-500 hover:text-slate-800 border-slate-300 hover:border-slate-400"
+              } ${voce.staParlando ? "animate-pulse" : ""}`}
+              type="button"
+            >
+              {voce.attiva ? "🔊 Voce cliente" : "🔇 Voce cliente"}
+            </button>
           )}
 
           <button
