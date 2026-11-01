@@ -10,6 +10,7 @@ interface MessageInputProps {
   loading: boolean;
   disabled: boolean;
   nomeCliente?: string;
+  onInizioAscolto?: () => void; // es. per zittire la voce del cliente
 }
 
 const SUGGERIMENTI = [
@@ -25,6 +26,7 @@ export default function MessageInput({
   loading,
   disabled,
   nomeCliente = "Cliente",
+  onInizioAscolto,
 }: MessageInputProps) {
   const [testo, setTesto] = useState("");
   const [mostraSuggerimenti, setMostraSuggerimenti] = useState(false);
@@ -37,6 +39,7 @@ export default function MessageInput({
   const recognitionRef = useRef<any>(null);
   const trascrizioneRef = useRef("");
   const onInviaRef = useRef(onInvia);
+  const onInizioAscoltoRef = useRef(onInizioAscolto);
   const bloccatoRef = useRef(false);
   const timerSilenzioRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -49,8 +52,9 @@ export default function MessageInput({
 
   useEffect(() => {
     onInviaRef.current = onInvia;
+    onInizioAscoltoRef.current = onInizioAscolto;
     bloccatoRef.current = loading || disabled;
-  }, [onInvia, loading, disabled]);
+  }, [onInvia, onInizioAscolto, loading, disabled]);
 
   useEffect(() => {
     const SR =
@@ -68,7 +72,7 @@ export default function MessageInput({
     if (!SR || bloccatoRef.current) return;
 
     // Se il cliente sta parlando, si ferma: il venditore prende la parola
-    window.speechSynthesis?.cancel();
+    onInizioAscoltoRef.current?.();
     setErroreVoce(null);
     setMostraSuggerimenti(false);
     trascrizioneRef.current = "";

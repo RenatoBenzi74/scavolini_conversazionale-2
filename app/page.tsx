@@ -268,7 +268,10 @@ export default function HomePage() {
         }));
 
         // Il cliente risponde anche a voce (se attivata)
-        voce.parla(risposta.messaggio_cliente);
+        voce.parla(risposta.messaggio_cliente, {
+          personaggioId: personaggio.id,
+          statoEmotivo: risposta.stato_emotivo,
+        });
 
         // Rilevamento successo fase
         if (risposta.apertura >= faseCorrente.sogliaSuccesso) {
@@ -427,7 +430,11 @@ export default function HomePage() {
                 // Cliccando per attivare, il cliente dice subito la prima frase
                 if (nuovo && sim.messaggi.length === 0 && personaggio && faseCorrente) {
                   setTimeout(
-                    () => voce.parla(personaggio.messaggiIniziali[faseCorrente.id]),
+                    () =>
+                      voce.parla(personaggio.messaggiIniziali[faseCorrente.id], {
+                        personaggioId: personaggio.id,
+                        statoEmotivo: "neutro",
+                      }),
                     0
                   );
                 }
@@ -501,6 +508,7 @@ export default function HomePage() {
               loading={sim.loading}
               disabled={faseCompletata}
               nomeCliente={personaggio.nome}
+              onInizioAscolto={voce.ferma}
             />
           </div>
         </main>
