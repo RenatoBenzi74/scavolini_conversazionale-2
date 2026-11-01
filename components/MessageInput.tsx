@@ -2,6 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback, KeyboardEvent } from "react";
 
+// Quanti ms di silenzio aspettare prima di inviare la risposta a voce
+const SILENZIO_INVIO_MS = 3000;
+
 interface MessageInputProps {
   onInvia: (testo: string) => void;
   loading: boolean;
@@ -35,6 +38,14 @@ export default function MessageInput({
   const trascrizioneRef = useRef("");
   const onInviaRef = useRef(onInvia);
   const bloccatoRef = useRef(false);
+  const timerSilenzioRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const azzeraTimerSilenzio = () => {
+    if (timerSilenzioRef.current) {
+      clearTimeout(timerSilenzioRef.current);
+      timerSilenzioRef.current = null;
+    }
+  };
 
   useEffect(() => {
     onInviaRef.current = onInvia;
@@ -45,7 +56,10 @@ export default function MessageInput({
     const SR =
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     setVocaleSupportato(!!SR);
-    return () => recognitionRef.current?.abort?.();
+    return () => {
+      azzeraTimerSilenzio();
+      recognitionRef.current?.abort?.();
+    };
   }, []);
 
   const avviaAscolto = useCallback(() => {
@@ -61,7 +75,7 @@ export default function MessageInput({
     const rec = new SR();
     rec.lang = "it-IT";
     rec.interimResults = true;
-    rec.continuous = false; // si ferma da solo dopo una pausa
+    rec.continuous = true; // non si ferma alla prima pausa: decide il timer del silenzio
 
     rec.onresult = (event: any) => {
       let testoCompleto = "";
@@ -70,6 +84,12 @@ export default function MessageInput({
       }
       trascrizioneRef.current = testoCompleto;
       setTesto(testoCompleto); // mostra in tempo reale ciò che il venditore dice
+
+      // Ogni volta che parla, il conto alla rovescia del silenzio riparte
+      azzeraTimerSilenzio();
+      timerSilenzioRef.current = setTimeout(() => {
+        recognitionRef.current?.stop?.();
+      }, SILENZIO_INVIO_MS);
     };
 
     rec.onerror = (event: any) => {
@@ -83,6 +103,7 @@ export default function MessageInput({
     };
 
     rec.onend = () => {
+      azzeraTimerSilenzio();
       setInAscolto(false);
       recognitionRef.current = null;
       const finale = trascrizioneRef.current.trim();
@@ -209,6 +230,11 @@ export default function MessageInput({
           )}
         </button>
       </div>
+      {inAscolto && (
+        <p className="text-[11px] text-slate-400 text-center">
+          Ti ascolto: invio dopo {SILENZIO_INVIO_MS / 1000} secondi di silenzio, oppure premi ■ per inviare subito.
+        </p>
+      )}
       {erroreVoce && (
         <p className="text-xs text-red-500 text-center">{erroreVoce}</p>
       )}
